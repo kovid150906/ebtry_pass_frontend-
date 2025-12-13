@@ -22,14 +22,12 @@ const Login = () => {
     try {
       setLoading(true);
 
-      // Google auth
       const result = await signInWithPopup(auth, provider);
       const email = result?.user?.email;
       if (!email) throw new Error('No email');
 
       const firebaseToken = await result.user.getIdToken();
 
-      // Edith verify
       const verifyRes = await fetch('https://edith.moodi.org/api/miauth/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,12 +35,11 @@ const Login = () => {
       });
 
       const verifyData = await verifyRes.json();
-      if (!verifyData?.token) throw new Error('Not registered');
+      if (!verifyData?.token) throw new Error('Verification failed');
 
       localStorage.setItem('userEmail', email);
       localStorage.setItem('jwtToken', verifyData.token);
 
-      // Backend sync
       const checkRes = await fetch(`${API_BASE}/api/accommodation/check`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,7 +50,6 @@ const Login = () => {
       if (checkData.token) localStorage.setItem('jwtToken', checkData.token);
 
       setLoading(false);
-
       navigate(checkData.imageUploaded ? '/pass' : '/upload', { replace: true });
 
     } catch (err) {
@@ -67,50 +63,49 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <img src="/moodilogo.png" className="login-logo" alt="Mood Indigo" />
-        <h2 className="login-title">Access Pass Portal</h2>
+      <div className="login-container">
+
+        <div className="login-header">
+          <img src="/moodilogo.png" alt="Mood Indigo" className="moodi-logo" />
+          <div className="login-subtitle">Accommodation Portal</div>
+        </div>
 
         {loading ? (
-          <div className="login-loading">
-            <div className="spinner" />
-            <p>Signing you in…</p>
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p className="loading-message">Signing you in…</p>
           </div>
         ) : (
           <>
             <div className="login-buttons">
               <button
-                className={`google-login-btn ${!useEmailLogin ? 'active' : ''}`}
+                className={`login-btn google-btn ${!useEmailLogin ? 'active' : ''}`}
                 onClick={() => setUseEmailLogin(false)}
               >
-                <FcGoogle size={22} /> Google Login
+                <FcGoogle />
+                Google Login
               </button>
 
               <button
-                className={`google-login-btn ${useEmailLogin ? 'active' : ''}`}
+                className={`login-btn email-btn ${useEmailLogin ? 'active' : ''}`}
                 onClick={() => setUseEmailLogin(true)}
               >
-                <MdEmail size={22} /> Email Login
+                <MdEmail />
+                Email Login
               </button>
             </div>
 
-            {!useEmailLogin ? (
-              <button className="google-login-btn" onClick={handleGoogleLogin}>
-                <FcGoogle size={22} />
-                <span>Sign in with Google</span>
-              </button>
-            ) : (
-              <EmailLogin />
-            )}
+            <div className="login-method">
+              {!useEmailLogin ? (
+                <button className="submit-btn" onClick={handleGoogleLogin}>
+                  Sign in with Google
+                </button>
+              ) : (
+                <EmailLogin />
+              )}
+            </div>
 
-            {error && (
-              <div className="login-error">
-                <p>{error}</p>
-                <a href="https://moodi.org/" target="_blank" rel="noreferrer">
-                  👉 Register here
-                </a>
-              </div>
-            )}
+            {error && <div className="error-message">{error}</div>}
           </>
         )}
       </div>

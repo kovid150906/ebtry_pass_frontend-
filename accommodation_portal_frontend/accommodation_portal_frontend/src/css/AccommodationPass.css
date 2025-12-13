@@ -468,3 +468,25 @@
     height: 180px !important;
   }
 }
+.pass-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.action-btn.download-btn {
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #ff9f47, #ffb366);
+  color: #0a0a0a;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn.download-btn:hover {
+  transform: translateY(-2px);
+}

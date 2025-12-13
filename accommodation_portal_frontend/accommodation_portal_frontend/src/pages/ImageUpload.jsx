@@ -91,42 +91,64 @@ const ImageUpload = () => {
   return (
     <div className="image-upload-page">
       <div className="upload-container">
+
         <div className="upload-header">
           <img src="/moodilogo.png" className="moodi-logo" alt="Mood Indigo" />
           <h1>Upload Your Photo</h1>
+          <p className="upload-instruction">
+            Please upload a clear photo for your accommodation pass
+          </p>
         </div>
 
-        {!imagePreview && !showCamera && (
-          <button className="capture-btn" onClick={startCamera}>
-            <FaCamera /> Click Photo
-          </button>
-        )}
+        <div className="upload-content">
+          {!imagePreview && !showCamera && (
+            <div className="upload-area">
+              <div className="upload-icon">📸</div>
+              <p className="upload-text">Click below to capture your photo</p>
+              <p className="upload-hint">Maximum file size: 1MB</p>
 
-        {showCamera && (
-          <div className="camera-view">
-            <video ref={videoRef} autoPlay className="camera-video" />
-            <canvas ref={canvasRef} hidden />
-            <button className="capture-photo-btn" onClick={capturePhoto}>
-              Capture
-            </button>
-          </div>
-        )}
+              <div className="upload-buttons">
+                <button className="capture-btn" onClick={startCamera}>
+                  <FaCamera className="btn-icon" />
+                  Take Photo
+                </button>
+              </div>
+            </div>
+          )}
 
-        {imagePreview && (
-          <div className="preview-area">
-            <img src={imagePreview} className="image-preview" alt="Preview" />
-            <button
-              className="submit-btn"
-              onClick={uploadImage}
-              disabled={uploading}
-            >
-              <FaCheckCircle />
-              {uploading ? 'Uploading…' : 'Submit Photo'}
-            </button>
-          </div>
-        )}
+          {showCamera && (
+            <div className="camera-view">
+              <video ref={videoRef} autoPlay className="camera-video" />
+              <canvas ref={canvasRef} hidden />
+              <div className="camera-controls">
+                <button className="capture-photo-btn" onClick={capturePhoto}>
+                  Capture Photo
+                </button>
+              </div>
+            </div>
+          )}
 
-        {error && <div className="error-message">{error}</div>}
+          {imagePreview && (
+            <div className="preview-area">
+              <div className="image-preview-container">
+                <img src={imagePreview} className="image-preview" alt="Preview" />
+              </div>
+
+              <div className="preview-actions">
+                <button
+                  className="submit-btn"
+                  onClick={uploadImage}
+                  disabled={uploading}
+                >
+                  <FaCheckCircle className="btn-icon" />
+                  {uploading ? 'Uploading…' : 'Submit Photo'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {error && <div className="error-message">{error}</div>}
+        </div>
       </div>
     </div>
   );
