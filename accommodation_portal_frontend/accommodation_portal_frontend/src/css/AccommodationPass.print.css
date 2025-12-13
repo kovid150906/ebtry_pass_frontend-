@@ -1,0 +1,111 @@
+/* Print stylesheet: mirror main AccommodationPass.css dimensions and layout */
+
+@media print {
+  /* page wrapper */
+  .accommodation-pass-page {
+    min-height: 100vh !important;
+    padding: 40px 20px !important;
+    background-image: none !important; /* avoid print background issues */
+    color: var(--text-primary) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* container and card */
+  .pass-container { width: 100% !important; max-width: 780px !important; margin: 0 auto !important; perspective: 1000px !important; }
+  .pass-card { background: #2C0446 !important; border-radius: 20px !important; box-shadow: none !important; overflow: hidden !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+
+  /* header */
+  .pass-header { padding: 30px !important; text-align: center !important; }
+  .moodi-logo { max-width: 420px !important; width: 80% !important; margin: 8px auto 14px !important; }
+
+  /* body layout (match screen grid) */
+  .pass-body { display: grid !important; grid-template-columns: 320px 1fr !important; gap: 20px !important; padding: 24px !important; }
+
+  /* left column */
+  .pass-left-col { display: flex !important; flex-direction: column !important; gap: 25px !important; }
+  .pass-photo-section { width: 100% !important; aspect-ratio: 1 !important; border-radius: 16px !important; overflow: hidden !important; border: 4px solid rgba(255,255,255,0.06) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important; }
+  .pass-photo { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }
+
+  /* info/declarations */
+  .pass-info, .declarations { display: flex !important; flex-direction: column !important; gap: 18px !important; color: rgba(255,255,255,0.95) !important; }
+  .info-label, .decl-title { font-size: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; color: var(--text-muted) !important; }
+  .info-value { font-size: 18px !important; font-weight: 700 !important; color: var(--text-primary) !important; }
+
+  /* right column */
+  .pass-right-col { display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; margin-top: 1vh !important; }
+  .pass-codes { display: flex !important; flex-direction: column !important; gap: 12px !important; width: 100% !important; align-items: center !important; }
+
+  /* qr */
+  .qr-code-wrapper { background: #ffffff !important; padding: 12px !important; border-radius: 10px !important; box-shadow: 0 5px 18px rgba(0,0,0,0.08) !important; border: 2px solid #e6e6e6 !important; display: flex !important; align-items: center !important; justify-content: center !important; min-width: 180px !important; min-height: 160px !important; }
+  .qr-code-wrapper svg { display: block !important; width: 160px !important; height: 160px !important; }
+
+  /* barcode wrapper - use same dimensions but tuned for print */
+  .barcode-wrapper { background: #ffffff !important; padding: 2px 6px !important; border-radius: 8px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important; border: 2px solid #e6e6e6 !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; max-width: 640px !important; height: auto !important; overflow: visible !important; margin-top: 2rem !important; }
+  .barcode-wrapper canvas, .barcode-wrapper img { width: 100% !important; height: 90px !important; display: block !important; }
+
+  /* barcode SVG rules preserved if any exist */
+  .barcode-wrapper svg, .barcode-wrapper svg rect, .barcode-wrapper svg path, .barcode-wrapper svg line, .barcode-wrapper svg g { stroke: none !important; opacity: 1 !important; }
+
+  /* signature */
+  .signature-area { margin-top: 12px !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
+  .signature-line { width: 70% !important; border-bottom: 2px solid rgba(255,255,255,0.6) !important; }
+
+  /* keep interactive controls hidden in print */
+  .no-print { display: none !important; }
+
+  /* footer */
+  .pass-footer { padding: 25px !important; text-align: center !important; }
+}
+
+/* end of print stylesheet */
+
+/* Hide common in-app notification elements in print (simple) */
+@media print {
+  .toast, .notification, .app-notification, .toast-container, .ant-notification, .MuiSnackbar-root, [role="status"], [role="alert"], [aria-live] {
+    display: none !important;
+  }
+}
+
+/* Allow forcing print layout via `.print-mode` class (used by download action) */
+.print-mode .accommodation-pass-page {
+  min-height: 100vh !important;
+  padding: 40px 20px !important;
+  background-image: none !important;
+  color: var(--text-primary) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.print-mode .pass-container { width: 100% !important; max-width: 780px !important; margin: 0 auto !important; perspective: 1000px !important; }
+.print-mode .pass-card { background: #2C0446 !important; border-radius: 20px !important; box-shadow: none !important; overflow: hidden !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+
+.print-mode .pass-header { padding: 30px !important; text-align: center !important; }
+.print-mode .moodi-logo { max-width: 420px !important; width: 80% !important; margin: 8px auto 14px !important; }
+
+.print-mode .pass-body { display: grid !important; grid-template-columns: 320px 1fr !important; gap: 20px !important; padding: 24px !important; }
+
+.print-mode .pass-left-col { display: flex !important; flex-direction: column !important; gap: 25px !important; }
+.print-mode .pass-photo-section { width: 100% !important; aspect-ratio: 1 !important; border-radius: 16px !important; overflow: hidden !important; border: 4px solid rgba(255,255,255,0.06) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important; }
+.print-mode .pass-photo { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }
+
+.print-mode .pass-info, .print-mode .declarations { display: flex !important; flex-direction: column !important; gap: 18px !important; color: rgba(255,255,255,0.95) !important; }
+.print-mode .info-label, .print-mode .decl-title { font-size: 12px !important; font-weight: 700 !important; text-transform: uppercase !important; color: var(--text-muted) !important; }
+.print-mode .info-value { font-size: 18px !important; font-weight: 700 !important; color: var(--text-primary) !important; }
+
+.print-mode .pass-right-col { display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; margin-top: 1vh !important; }
+.print-mode .pass-codes { display: flex !important; flex-direction: column !important; gap: 12px !important; width: 100% !important; align-items: center !important; }
+
+.print-mode .qr-code-wrapper { background: #ffffff !important; padding: 12px !important; border-radius: 10px !important; box-shadow: 0 5px 18px rgba(0,0,0,0.08) !important; border: 2px solid #e6e6e6 !important; display: flex !important; align-items: center !important; justify-content: center !important; min-width: 180px !important; min-height: 160px !important; }
+.print-mode .qr-code-wrapper svg { display: block !important; width: 160px !important; height: 160px !important; }
+
+.print-mode .barcode-wrapper { background: #ffffff !important; padding: 2px 6px !important; border-radius: 8px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important; border: 2px solid #e6e6e6 !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; max-width: 640px !important; height: auto !important; overflow: visible !important; margin-top: 2rem !important; }
+.print-mode .barcode-wrapper canvas, .print-mode .barcode-wrapper img { width: 100% !important; height: 90px !important; display: block !important; }
+
+.print-mode .barcode-wrapper svg, .print-mode .barcode-wrapper svg rect, .print-mode .barcode-wrapper svg path, .print-mode .barcode-wrapper svg line, .print-mode .barcode-wrapper svg g { stroke: none !important; opacity: 1 !important; }
+
+.print-mode .signature-area { margin-top: 12px !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
+.print-mode .signature-line { width: 70% !important; border-bottom: 2px solid rgba(255,255,255,0.6) !important; }
+
+.print-mode .no-print { display: none !important; }
+.print-mode .pass-footer { padding: 25px !important; text-align: center !important; }

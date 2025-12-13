@@ -1,0 +1,470 @@
+/* Accommodation Pass Page Styles */
+
+:root {
+  --bg-dark-1: #0f1419;
+  --bg-dark-2: #1e1b3c;
+  --accent-purple: #7c6cff;
+  --accent-orange: #ff9f47;
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.75);
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --shadow-dark: rgba(0, 0, 0, 0.6);
+}
+
+.accommodation-pass-page {
+  min-height: 100vh;
+  background-image: linear-gradient(180deg, #420B66B3 0%, #37094AB3 100%), url('../assets/bgimage.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* Action Buttons */
+.pass-actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 14px 28px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 108, 255, 0.3);
+}
+
+.download-btn {
+  background: var(--accent-purple);
+  color: #ffffff;
+  border: none;
+}
+
+.btn-icon {
+  font-size: 18px;
+}
+
+/* Pass Container */
+.pass-container {
+  width: 100%;
+  max-width: 780px;
+  perspective: 1000px;
+}
+
+.pass-card {
+  background: #2C0446;
+  border-radius: 20px; /* Capture logic removes this temporarily */
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  height: auto;
+  min-height: 520px;
+}
+
+/* --- UPDATED WATERMARK STYLING --- */
+.watermark-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5; 
+  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.watermark-overlay img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* 'cover' ensures the image stretches to fill the whole background on mobile */
+  object-fit: cover; 
+}
+
+/* Z-Index Layers to control overlap */
+.z-low { position: relative; z-index: 1; }
+.z-high { position: relative; z-index: 10; }
+
+/* Pass Header */
+.pass-header {
+  background: transparent;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+}
+
+.header-content {
+  position: relative;
+}
+
+.moodi-logo {
+  max-width: 420px;
+  width: 80%;
+  display: block;
+  margin: 8px auto 14px;
+}
+
+.pass-type {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+/* Pass Body */
+.pass-body {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  padding: 24px;
+  background: transparent;
+  position: relative;
+}
+
+/* Left Column */
+.pass-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.pass-photo-section {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 4px solid rgba(255,255,255,0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(135deg, rgba(124, 108, 255, 0.1), rgba(255, 159, 71, 0.1));
+}
+
+.pass-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pass-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #000000;
+}
+
+/* 2-Column Grid layout for details */
+.pass-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 25px;
+  align-items: start;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0; 
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.info-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.info-value.highlight {
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 900;
+}
+
+/* Right Column */
+.pass-right-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-top: 1vh;
+}
+
+.pass-codes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+}
+
+.qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3.5vh;
+  width: 100%;
+  margin-top: 3vh;
+}
+
+.code-label {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+.qr-code-wrapper {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+  border: 2px solid #e6e6e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 280px; 
+  min-height: 280px;
+}
+
+.qr-code-wrapper svg {
+  display: block !important;
+  width: 260px !important;
+  height: 260px !important;
+}
+
+.declarations {
+  margin-top: 12px;
+  padding: 6px 6px 4px 6px;
+  color: rgba(255,255,255,0.95);
+  background: rgba(44, 4, 70, 0.4); 
+  backdrop-filter: blur(2px);
+  border-radius: 8px;
+}
+
+.decl-title {
+  font-size: 13px;
+  font-weight: 800;
+  margin: 2px 0 6px 0;
+  color: rgba(255,255,255,0.98);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.decl-list {
+  margin: 0 0 0 14px;
+  padding-left: 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.94);
+}
+
+.decl-list li {
+  margin: 6px 0;
+}
+
+.signature-area {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(44, 4, 70, 0.4); 
+  backdrop-filter: blur(2px);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.signature-line {
+  width: 70%;
+  border-bottom: 2px solid rgba(255,255,255,0.6);
+  height: 0;
+}
+
+.signature-label {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
+}
+
+.pass-footer {
+  background: transparent;
+  padding: 25px;
+  text-align: center;
+}
+
+/* Loading */
+.pass-loading {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-dark-1) 0%, var(--bg-dark-2) 100%);
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-purple);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media print {
+  .accommodation-pass-page {
+    background-image: none !important;
+  }
+  .pass-card {
+    /* Ensure print preview is also rectangular */
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .pass-body {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 30px;
+  }
+
+  .pass-info {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pass-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 560px;
+    height: auto;
+    padding: 12px;
+  }
+
+  .pass-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px;
+    flex: 1 1 auto;
+  }
+  
+  .pass-left-col { display: contents; }
+
+  .pass-photo-section {
+    max-width: 200px;
+    width: 60%;
+    margin: 0 auto;
+    order: 1;
+  }
+
+  .pass-info {
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .pass-right-col {
+    display: contents;
+  }
+
+  .pass-codes {
+    order: 3;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+
+  /* Watermark logic remains same as desktop now: fill available area */
+  .watermark-overlay {
+    /* No special mobile override needed if we want it to fill */
+    /* If you want to force it to be taller than wide on mobile, containment works best */
+  }
+
+  .declarations {
+    order: 99;
+    width: 100%;
+    margin-top: auto;
+    position: relative;
+    z-index: 10;
+  }
+
+  .signature-area {
+    order: 100;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .qr-code-wrapper {
+    min-width: 200px;
+    min-height: 200px;
+    padding: 10px;
+  }
+  
+  .qr-code-wrapper svg {
+    width: 200px !important;
+    height: 200px !important;
+  }
+
+  .pass-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .action-btn { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .qr-code-wrapper {
+    min-width: 180px;
+    min-height: 180px;
+  }
+  .qr-code-wrapper svg {
+    width: 180px !important;
+    height: 180px !important;
+  }
+}
