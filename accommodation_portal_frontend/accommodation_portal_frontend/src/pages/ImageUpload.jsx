@@ -21,8 +21,31 @@ const ImageUpload = () => {
   const userEmail = localStorage.getItem('userEmail');
   const jwtToken = localStorage.getItem('jwtToken');
 
+  // 🔥 BACKEND IS SOURCE OF TRUTH
   useEffect(() => {
-    if (!userEmail || !jwtToken) navigate('/login');
+    if (!userEmail || !jwtToken) {
+      navigate('/login');
+      return;
+    }
+
+    fetch(`${API_BASE}/api/accommodation/check`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwtToken}`
+      },
+      body: JSON.stringify({ email: userEmail })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.imageUploaded) {
+          navigate('/pass', { replace: true });
+        }
+      })
+      .catch(() => {
+        localStorage.clear();
+        navigate('/login');
+      });
   }, [navigate, userEmail, jwtToken]);
 
   const startCamera = async () => {

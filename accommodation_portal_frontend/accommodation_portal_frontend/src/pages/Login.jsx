@@ -40,14 +40,21 @@ const Login = () => {
       localStorage.setItem('userEmail', email);
       localStorage.setItem('jwtToken', verifyData.token);
 
+      // 🔥 ALWAYS re-check backend state
       const checkRes = await fetch(`${API_BASE}/api/accommodation/check`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${verifyData.token}`
+        },
         body: JSON.stringify({ email })
       });
 
       const checkData = await checkRes.json();
-      if (checkData.token) localStorage.setItem('jwtToken', checkData.token);
+
+      if (checkData.token) {
+        localStorage.setItem('jwtToken', checkData.token);
+      }
 
       setLoading(false);
       navigate(checkData.imageUploaded ? '/pass' : '/upload', { replace: true });
