@@ -18,28 +18,15 @@ const Login = () => {
 
     try {
       setLoading(true);
-      console.log('[LOGIN] Starting Google popup');
 
-      // 1️⃣ Google sign-in (popup)
+      // 1. Google auth
       const result = await signInWithPopup(auth, provider);
+      const email = result?.user?.email;
+      if (!email) throw new Error('No email from Google');
 
-      if (!result || !result.user) {
-        throw new Error('Google sign-in returned no user');
-      }
-
-      const email = result.user.email;
-      console.log('[LOGIN] Firebase user email:', email);
-
-      if (!email) {
-        throw new Error('No email returned from Google');
-      }
-
-      // 2️⃣ Firebase ID token
       const firebaseToken = await result.user.getIdToken();
-      console.log('[LOGIN] Firebase token obtained');
 
-      // 3️⃣ Edith verify (AUTH ONLY)
-      console.log('[LOGIN] Calling Edith /verify');
+      // 2. Edith verify (auth only)
       const verifyRes = await fetch(
         'https://edith.moodi.org/api/miauth/verify',
         {
@@ -49,23 +36,16 @@ const Login = () => {
         }
       );
 
-      if (!verifyRes.ok) {
-        throw new Error('Edith verify request failed');
-      }
-
       const verifyData = await verifyRes.json();
-      console.log('[LOGIN] Edith verify response:', verifyData);
-
-      // 🔴 Edith contract: token === registered
-      if (!verifyData || !verifyData.token) {
-        throw new Error('User not registered with Mood Indigo');
+      if (!verifyData?.token) {
+        throw new Error('Not registered');
       }
 
-      // Save minimal identity
+      // 3. Save minimal auth state
       localStorage.setItem('userEmail', email);
+      localStorage.setItem('jwtToken', verifyData.token);
 
-      // 4️⃣ Backend access-pass check (THIS creates / updates DB row)
-      console.log('[LOGIN] Calling backend /check');
+      // 4. Backend bootstrap
       const checkRes = await fetch(
         `${API_BASE}/api/accommodation/check`,
         {
@@ -75,31 +55,26 @@ const Login = () => {
         }
       );
 
-      if (!checkRes.ok) {
-        throw new Error('Backend /check failed');
-      }
+      if (!checkRes.ok) throw new Error('Backend check failed');
 
       const checkData = await checkRes.json();
-      console.log('[LOGIN] Backend /check response:', checkData);
 
-      if (!checkData.token) {
-        throw new Error('Backend did not return JWT');
+      // overwrite token with backend JWT (IMPORTANT)
+      if (checkData.token) {
+        localStorage.setItem('jwtToken', checkData.token);
       }
-
-      // Backend JWT is now source of truth
-      localStorage.setItem('jwtToken', checkData.token);
 
       setLoading(false);
 
-      // 5️⃣ Navigate
+      // 5. Navigate ONCE
       if (checkData.imageUploaded) {
-        navigate('/pass');
+        navigate('/pass', { replace: true });
       } else {
-        navigate('/upload');
+        navigate('/upload', { replace: true });
       }
 
     } catch (err) {
-      console.error('❌ LOGIN FAILED:', err);
+      console.error('LOGIN ERROR:', err);
       setLoading(false);
       setError(
         'You are not registered for Mood Indigo. Please register on https://moodi.org/'
@@ -109,23 +84,25 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <div className="login-container">
-        <h2>Access Pass Portal</h2>
+      <div className="login-card">
+        <img src="/moodilogo.png" alt="Mood Indigo" className="login-logo" />
+
+        <h2 className="login-title">Access Pass Portal</h2>
 
         {loading ? (
-          <div className="loading-container">
+          <div className="login-loading">
             <div className="spinner"></div>
             <p>Signing you in…</p>
           </div>
         ) : (
           <>
-            <button className="submit-btn" onClick={handleGoogleLogin}>
-              <FcGoogle style={{ marginRight: 8 }} />
-              Sign in with Google
+            <button className="google-login-btn" onClick={handleGoogleLogin}>
+              <FcGoogle size={22} />
+              <span>Sign in with Google</span>
             </button>
 
             {error && (
-              <div className="error-message">
+              <div className="login-error">
                 <p>{error}</p>
                 <a
                   href="https://moodi.org/"

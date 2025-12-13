@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/ImageUpload.css';
-import { auth } from '../firebase';
 import { FaCamera, FaUpload, FaCheckCircle } from 'react-icons/fa';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
@@ -22,28 +21,21 @@ const ImageUpload = () => {
   const activeStreamRef = useRef(null);
   const navigate = useNavigate();
 
-  const userName = localStorage.getItem('userName');
+  // ✅ ONLY THESE TWO MATTER
   const userEmail = localStorage.getItem('userEmail');
+  const jwtToken = localStorage.getItem('jwtToken');
 
   /* =========================
-     AUTH TOKEN (BACKEND ONLY)
-  ========================== */
-  const getTokenForUpload = async () => {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) return null;
-    return token;
-  };
-
-  /* =========================
-     LOGIN GUARD
+     LOGIN GUARD (FIXED)
   ========================== */
   useEffect(() => {
-    if (!userName || !userEmail) {
+    if (!userEmail || !jwtToken) {
       localStorage.clear();
       navigate('/login');
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setCheckingStatus(false);
+  }, [navigate, userEmail, jwtToken]);
 
   /* =========================
      CHECK IF IMAGE ALREADY UPLOADED
@@ -52,78 +44,39 @@ const ImageUpload = () => {
     let cancelled = false;
 
     const checkUploadStatus = async () => {
-      if (!userEmail) {
-        setCheckingStatus(false);
-        return;
-      }
-
       try {
-        const token = await getTokenForUpload();
-        if (!token) {
-          localStorage.clear();
-          navigate('/login');
-          return;
-        }
-
-        const url = `${API_BASE}/api/accommodation/check`;
-        const res = await fetch(url, {
+        const res = await fetch(`${API_BASE}/api/accommodation/check`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: userEmail })
         });
-
-        if (res.status === 401 || res.status === 403) {
-          localStorage.clear();
-          navigate('/login');
-          return;
-        }
 
         if (res.ok) {
           const data = await res.json();
           if (!cancelled && data.imageUploaded) {
             navigate('/pass');
-            return;
           }
         }
       } catch (err) {
-        console.error('Upload-status check error:', err);
+        console.error('Upload status check failed:', err);
       } finally {
         if (!cancelled) setCheckingStatus(false);
       }
     };
 
-    checkUploadStatus();
-    return () => {
-      cancelled = true;
-    };
+    if (userEmail) checkUploadStatus();
+    return () => { cancelled = true; };
   }, [API_BASE, navigate, userEmail]);
 
   /* =========================
      CAMERA CLEANUP
   ========================== */
   useEffect(() => {
-    return () => stopActiveStream();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      const stream = activeStreamRef.current;
+      if (stream) stream.getTracks().forEach(t => t.stop());
+    };
   }, []);
-
-  const stopActiveStream = () => {
-    const stream = activeStreamRef.current;
-    if (stream) {
-      stream.getTracks().forEach(t => {
-        try {
-          t.stop();
-        } catch {}
-      });
-      activeStreamRef.current = null;
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-    setShowCamera(false);
-  };
 
   if (checkingStatus) {
     return (
@@ -139,12 +92,12 @@ const ImageUpload = () => {
   }
 
   /* =========================
-     FILE VALIDATION
+     FILE HANDLERS (UNCHANGED)
   ========================== */
   const validateFile = (file) => {
     if (!file) return 'No file selected';
-    if (!file.type.startsWith('image/')) return 'Please select an image file';
-    if (file.size > MAX_SIZE_BYTES) return 'Image size must be under 1MB';
+    if (!file.type.startsWith('image/')) return 'Invalid image file';
+    if (file.size > MAX_SIZE_BYTES) return 'Image must be under 1MB';
     return null;
   };
 
@@ -153,10 +106,7 @@ const ImageUpload = () => {
     if (!file) return;
 
     const err = validateFile(file);
-    if (err) {
-      setError(err);
-      return;
-    }
+    if (err) return setError(err);
 
     setSelectedImage(file);
     setError('');
@@ -165,99 +115,19 @@ const ImageUpload = () => {
     reader.readAsDataURL(file);
   };
 
-  /* =========================
-     CAMERA CAPTURE
-  ========================== */
-  const handleCameraCapture = async () => {
-    setError('');
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' }
-      });
-      activeStreamRef.current = stream;
-      setShowCamera(true);
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(() => {});
-        }
-      }, 100);
-    } catch {
-      if (cameraInputRef.current) cameraInputRef.current.click();
-    }
-  };
-
-  const capturePhoto = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas) return;
-
-    canvas.width = video.videoWidth || 1280;
-    canvas.height = video.videoHeight || 720;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    canvas.toBlob(blob => {
-      if (!blob) return setError('Capture failed');
-
-      if (blob.size > MAX_SIZE_BYTES) {
-        return setError('Captured image exceeds 1MB');
-      }
-
-      const file = new File([blob], `camera-${Date.now()}.jpg`, {
-        type: 'image/jpeg'
-      });
-
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-        stopActiveStream();
-      };
-      reader.readAsDataURL(file);
-    }, 'image/jpeg', 0.85);
-  };
-
-  const handleFileUpload = () => {
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
-
-  /* =========================
-     IMAGE UPLOAD
-  ========================== */
   const handleUpload = async () => {
     if (!selectedImage) return setError('Please select an image');
 
-    const err = validateFile(selectedImage);
-    if (err) return setError(err);
-
-    const token = await getTokenForUpload();
-    if (!token) {
-      localStorage.clear();
-      navigate('/login');
-      return;
-    }
-
     setUploading(true);
-    setError('');
-
     try {
       const formData = new FormData();
       formData.append('photo', selectedImage);
 
       const res = await fetch(`${API_BASE}/api/accommodation/upload-image`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
+        headers: { Authorization: `Bearer ${jwtToken}` },
         body: formData
       });
-
-      if (res.status === 401 || res.status === 403) {
-        localStorage.clear();
-        navigate('/login');
-        return;
-      }
 
       const data = await res.json();
       if (res.ok && data.ok) {
@@ -265,20 +135,11 @@ const ImageUpload = () => {
       } else {
         setError(data.error || 'Upload failed');
       }
-    } catch (err) {
-      console.error('Upload error:', err);
-      setError('Upload failed. Try again.');
+    } catch {
+      setError('Upload failed');
     } finally {
       setUploading(false);
     }
-  };
-
-  const handleReset = () => {
-    setSelectedImage(null);
-    setImagePreview(null);
-    setError('');
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    if (cameraInputRef.current) cameraInputRef.current.value = '';
   };
 
   return (
@@ -288,7 +149,7 @@ const ImageUpload = () => {
           <img src="/moodilogo.png" className="moodi-logo" alt="Mood Indigo" />
           <h1>Upload Your Photo</h1>
           <p className="user-greeting">
-            Welcome, <strong>{userName}</strong>!
+            Welcome!
           </p>
           <p className="upload-instruction">
             Please upload a clear photo for your access pass
@@ -296,35 +157,8 @@ const ImageUpload = () => {
         </div>
 
         <div className="upload-content">
-          {showCamera ? (
-            <div className="camera-view">
-              <video ref={videoRef} autoPlay playsInline className="camera-video" />
-              <canvas ref={canvasRef} style={{ display: 'none' }} />
-              <div className="camera-controls">
-                <button className="capture-photo-btn" onClick={capturePhoto}>
-                  <FaCamera className="btn-icon" />
-                  Capture Photo
-                </button>
-                <button className="close-camera-btn" onClick={stopActiveStream}>
-                  Close Camera
-                </button>
-              </div>
-            </div>
-          ) : !imagePreview ? (
+          {!imagePreview ? (
             <div className="upload-area">
-              <div className="upload-icon">📸</div>
-              <p>Capture or upload your photo</p>
-              <p className="upload-hint">Max size: 1MB</p>
-
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="user"
-                onChange={handleFileSelect}
-                hidden
-              />
-
               <input
                 ref={fileInputRef}
                 type="file"
@@ -332,52 +166,17 @@ const ImageUpload = () => {
                 onChange={handleFileSelect}
                 hidden
               />
-
-              <div className="upload-buttons">
-                <button className="capture-btn" onClick={handleCameraCapture}>
-                  <FaCamera className="btn-icon" />
-                  Take Photo
-                </button>
-
-                <button className="upload-btn" onClick={handleFileUpload}>
-                  <FaUpload className="btn-icon" />
-                  Choose from Device
-                </button>
-              </div>
+              <button className="upload-btn" onClick={() => fileInputRef.current.click()}>
+                <FaUpload className="btn-icon" /> Choose Photo
+              </button>
             </div>
           ) : (
             <div className="preview-area">
-              <div className="image-preview-container">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="image-preview"
-                />
-                {uploading && (
-                  <div className="upload-overlay">
-                    <div className="spinner" />
-                    <p>Uploading your photo...</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="preview-actions">
-                <button
-                  className="submit-btn"
-                  onClick={handleUpload}
-                  disabled={uploading}
-                >
-                  <FaCheckCircle className="btn-icon" />
-                  {uploading ? 'Uploading...' : 'Submit Photo'}
-                </button>
-                <button
-                  className="reset-btn"
-                  onClick={handleReset}
-                  disabled={uploading}
-                >
-                  Retake Photo
-                </button>
-              </div>
+              <img src={imagePreview} className="image-preview" alt="Preview" />
+              <button className="submit-btn" onClick={handleUpload} disabled={uploading}>
+                <FaCheckCircle className="btn-icon" />
+                {uploading ? 'Uploading…' : 'Submit Photo'}
+              </button>
             </div>
           )}
 

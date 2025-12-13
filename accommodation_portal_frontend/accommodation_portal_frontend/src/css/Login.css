@@ -1,190 +1,68 @@
-/* Login Page Styles */
-
-:root {
-  /* Primary colors requested by user */
-  --page-bg-dark: #37094A;
-  --card-bg: #2C0446;
-  --accent-pink: #ff1493;
-  --accent-orange: #ff6b35;
-  --btn-purple: #8b7ab8;
-  --btn-dark: rgba(30, 20, 40, 0.9);
-  --text-primary: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.85);
-  --shadow-dark: rgba(0, 0, 0, 0.6);
-}
-
 .login-page {
   min-height: 100vh;
-  /* Keep the background image and apply a slightly darker semi-transparent gradient overlay */
-  background-image: linear-gradient(180deg, #420B66B3 0%, #37094AB3 100%), url('../assets/bgimage.png'); /* webpackIgnore: true */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px 20px;
-  position: relative;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  font-family: 'Inter', sans-serif;
 }
 
-.login-container {
-  /* keep given width but allow vertical growth so content doesn't overflow */
-  width: 1023.2734375px;
-  min-height: 520px; /* allow content to expand beyond this if needed */
-  position: relative;
-  margin: 100px auto; /* centers horizontally and adds top spacing */
-  opacity: 1;
-  background: linear-gradient(180deg, #2C0446 0%, #2C0446 100%);
-  border-radius: 20px;
-  padding: 28px 40px; /* add internal padding so controls sit inside the card */
-  box-shadow: none;
-  backdrop-filter: none;
-  z-index: 1;
-}
-
-.login-header {
+.login-card {
+  background: #ffffff;
+  padding: 40px 32px;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 380px;
   text-align: center;
-  margin-bottom: 12px;
-  padding-top: 26px; /* move header content slightly lower */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
 }
 
-.moodi-logo {
-  display: block;
-  width: 100%;
-  max-width: 560px; /* make logo a bit wider */
-  height: auto;
-  margin: 22px auto 12px auto; /* push the logo down inside the card */
-  /* remove CSS filters - show original image */
-  filter: none;
+.login-logo {
+  width: 120px;
+  margin-bottom: 20px;
 }
 
-.login-subtitle {
-  color: var(--text-primary);
-  font-size: 24px;
-  font-weight: 600;
-  margin-top: 6px;
-  letter-spacing: 0.5px;
-}
-
-.login-buttons {
-  display: flex;
-  gap: 26px;
-  margin: 40px 0 18px 0; /* pushed down from subtitle */
-  justify-content: center;
-  align-items: center;
-}
-
-.login-btn {
-  width: auto;
-  padding: 14px 22px; /* made a little bigger */
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-primary);
-  font-weight: 700;
-  font-size: 16px; /* slightly larger */
-  cursor: pointer;
-  transition: transform 120ms ease, opacity 120ms ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-width: 160px;
-}
-
-.login-btn.google-btn {
-  background: #937EFF;
-  color: #ffffff;
-}
-
-.login-btn.email-btn {
-  background: #210333;
-  color: #ffffff;
-}
-
-.login-btn.email-btn.active {
-  background: #210333;
-}
-
-.login-btn:hover {
-  transform: translateY(-2px);
-  opacity: 0.95;
-}
-
-.login-btn.active {
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.03);
-}
-
-.login-btn svg {
+.login-title {
+  margin-bottom: 28px;
   font-size: 22px;
+  font-weight: 600;
+  color: #222;
 }
 
-.submit-btn {
+.google-login-btn {
   width: 100%;
-  max-width: 480px;
-  margin: 30px auto 0; /* center horizontally */
-  padding: 10px 20px;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 180ms ease, transform 120ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: none;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 500;
   border-radius: 8px;
-  border: none;
-  background: #210333;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
- .submit-btn:hover {
-  transform: translateY(-3px);
- }
+.google-login-btn:hover {
+  background: #f5f5f5;
+}
 
-.loading-container {
+.login-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-}
-
-.loading-message {
-  color: var(--text-primary);
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 20px;
-  text-align: center;
-}
-
-.login-method {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.login-method .submit-btn {
-  width: 100%;
-  max-width: 480px;
-  margin: 30px 0 0; /* centered by parent flex */
-}
-
-.btn-icon {
-  font-size: 22px;
+  gap: 12px;
 }
 
 .spinner {
-  width: 60px;
-  height: 60px;
-  border: 5px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--btn-purple);
+  width: 36px;
+  height: 36px;
+  border: 4px solid #eee;
+  border-top: 4px solid #302b63;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.9s linear infinite;
 }
 
 @keyframes spin {
@@ -193,180 +71,16 @@
   }
 }
 
-.email-login-section {
-  width: 100%;
-}
-
-@media (max-width: 600px) {
-  .login-container {
-    padding: 40px 30px;
-  }
-
-  .moodi-logo {
-    max-width: 350px;
-  }
-
-  .login-subtitle {
-    font-size: 20px;
-  }
-
-  .login-btn {
-    font-size: 14px;
-    padding: 14px 18px;
-  }
-
-  .submit-btn {
-    padding: 14px 20px;
-    font-size: 15px;
-  }
-}
-
-/* Email Login Styles */
-.email-login {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center; /* center form controls to avoid full-width inputs */
-}
-
-.input-group label {
-  color: var(--text-primary);
+.login-error {
+  margin-top: 20px;
   font-size: 14px;
+  color: #b00020;
+}
+
+.login-error a {
+  display: inline-block;
+  margin-top: 6px;
+  color: #302b63;
   font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.email-input,
-.otp-input {
-  width: 100%;
-  max-width: 420px; /* keep email input a controlled width */
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 2px solid rgba(139, 122, 184, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  outline: none;
-  box-sizing: border-box;
-  align-self: center;
-}
-
-.email-input::placeholder,
-.otp-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.email-input:focus,
-.otp-input:focus {
-  border-color: var(--btn-purple);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(139, 122, 184, 0.2);
-}
-
-.recaptcha-container {
-  display: flex;
-  justify-content: center;
-  margin: 10px 0;
-  padding: 15px;
-  background: transparent;
-  border-radius: 0;
-  border: none;
-}
-
-.recaptcha-container > div {
-  transform: scale(0.95);
-  transform-origin: center;
-}
-
-.send-otp-btn,
-.verify-otp-btn {
-  max-width: 420px; /* match input width */
-  width: 100%;
-  padding: 12px 18px;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  margin-top: 8px;
-  border-radius: 8px;
-  border: none;
-  background: var(--btn-purple);
-  align-self: center; /* keep button within the card centered */
-  display: inline-flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-.send-otp-btn:hover:not(:disabled),
-.verify-otp-btn:hover:not(:disabled) {
-  transform: none;
-}
-
-.send-otp-btn:disabled,
-.verify-otp-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.otp-section {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.success-message {
-  padding: 14px 18px;
-  background: rgba(76, 175, 80, 0.15);
-  border: 2px solid rgba(76, 175, 80, 0.3);
-  border-radius: 10px;
-  color: #81c784;
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-}
-
-.success-message strong {
-  color: #a5d6a7;
-  font-weight: 700;
-}
-
-.otp-timer {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-}
-
-.error-message {
-  padding: 14px 18px;
-  background: rgba(255, 59, 48, 0.15);
-  border: 2px solid rgba(255, 59, 48, 0.3);
-  border-radius: 10px;
-  color: #ff8a80;
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-  margin-top: 10px;
-}
-
-@media (max-width: 480px) {
-  .recaptcha-container > div {
-    transform: scale(0.85);
-  }
-
-  .login-buttons {
-    flex-direction: column;
-  }
+  text-decoration: none;
 }
