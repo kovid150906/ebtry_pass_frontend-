@@ -83,7 +83,7 @@ const ImageUpload = () => {
     } catch (err) {
       console.error("Camera Error:", err);
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-         setError('Permission denied. Please reset permissions.');
+         setError('Permission denied. Please reset permissions in address bar.');
       } else {
          setError(`Camera error: ${err.message}`);
       }
@@ -115,7 +115,7 @@ const ImageUpload = () => {
   const uploadImage = async () => {
     if (!selectedImage) return;
 
-    // 🔥 NEW VALIDATION: Full ID Number
+    // 🔥 VALIDATION: Check for Full ID Number
     if (!idNumber || idNumber.trim().length < 5) {
         setError('Please enter your valid FULL ID Number');
         return;
@@ -201,7 +201,6 @@ const ImageUpload = () => {
                         borderRadius: '5px', border: 'none', fontSize: '16px'
                     }}
                  >
-                    {/* 🔥 Removed College ID Option */}
                     <option value="Aadhar Card">Aadhar Card</option>
                     <option value="PAN Card">PAN Card</option>
                     <option value="Driving License">Driving License</option>
@@ -213,7 +212,6 @@ const ImageUpload = () => {
                     Full ID Number <span style={{color:'#ff4444'}}>*</span>
                  </label>
                  
-                 {/* 🔥 UPDATED INPUT: Allows letters and longer text */}
                  <input 
                    type="text"
                    placeholder="Enter Full ID Number"
