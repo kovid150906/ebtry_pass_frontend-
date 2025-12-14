@@ -14,7 +14,7 @@ const AccessPass = () => {
   const navigate = useNavigate();
 
   /* ===========================
-     FETCH USER DATA
+      FETCH USER DATA
   =========================== */
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
@@ -33,6 +33,13 @@ const AccessPass = () => {
     )
       .then(res => res.json())
       .then(data => {
+        // 🔥 CRITICAL FIX: If backend says image NOT uploaded, force redirect
+        // This solves the "Black Photo" bug
+        if (data.imageUploaded === false) {
+           navigate('/upload', { replace: true });
+           return;
+        }
+
         setUser(data);
         if (data.passImagePath) {
           setPassUrl(`${API_BASE}/passes/${data.passImagePath}`);
@@ -42,20 +49,20 @@ const AccessPass = () => {
   }, [navigate]);
 
   /* ===========================
-     GENERATE + SAVE PASS
+      GENERATE + SAVE PASS
   =========================== */
   const handleDownload = async () => {
     const pass = document.querySelector('.pass-card');
     if (!pass || !user) return;
 
-    // force consistent width (no UI change)
+    // Force consistent width for generation
     const originalWidth = pass.style.width;
     pass.style.width = '1024px';
     await new Promise(r => setTimeout(r, 120));
 
     const canvas = await html2canvas(pass, {
       scale: 2,
-      backgroundColor: '#ffffff', // 🔥 CRITICAL FIX (NO BLACK IMAGE)
+      backgroundColor: '#ffffff',
       useCORS: true,
       windowWidth: 1200
     });
@@ -105,7 +112,7 @@ const AccessPass = () => {
   };
 
   /* ===========================
-     LOADING STATE
+      LOADING STATE
   =========================== */
   if (!user) {
     return (
@@ -117,7 +124,7 @@ const AccessPass = () => {
   }
 
   /* ===========================
-     RENDER
+      RENDER
   =========================== */
   return (
     <div className="accommodation-pass-page">
@@ -150,7 +157,12 @@ const AccessPass = () => {
             {/* LEFT COLUMN */}
             <div className="pass-left-col z-low">
               <div className="pass-photo-section">
-                <div className="pass-photo-placeholder" />
+                <img 
+                  src={`${API_BASE}/api/accommodation/get-image?email=${encodeURIComponent(user.email)}`} 
+                  alt="Participant"
+                  className="pass-photo"
+                  onError={(e) => {e.target.style.display='none'}}
+                />
               </div>
 
               <div className="declarations z-high">
@@ -177,6 +189,12 @@ const AccessPass = () => {
                 <div className="info-row">
                   <span className="info-label">College</span>
                   <span className="info-value">{user.college}</span>
+                </div>
+                
+                {/* 🔥 NEW: Govt ID Row */}
+                <div className="info-row">
+                  <span className="info-label">{user.govtIdType}</span>
+                  <span className="info-value">xxxx {user.govtIdLast4}</span>
                 </div>
               </div>
 
