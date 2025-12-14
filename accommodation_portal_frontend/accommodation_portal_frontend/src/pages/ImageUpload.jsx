@@ -25,7 +25,6 @@ const ImageUpload = () => {
   const userEmail = localStorage.getItem('userEmail');
   const jwtToken = localStorage.getItem('jwtToken');
 
-  // 1. Check Login Status on Mount
   useEffect(() => {
     if (!userEmail || !jwtToken) {
       navigate('/login');
@@ -52,14 +51,13 @@ const ImageUpload = () => {
       });
   }, [navigate, userEmail, jwtToken]);
 
-  // 2. Attach Stream to Video Element when Camera Toggles On
+  // Handle Camera Stream
   useEffect(() => {
     if (showCamera && videoRef.current && streamRef.current) {
       videoRef.current.srcObject = streamRef.current;
     }
   }, [showCamera]);
 
-  // Cleanup stream when component unmounts
   useEffect(() => {
     return () => {
       if (streamRef.current) {
@@ -71,27 +69,21 @@ const ImageUpload = () => {
   const startCamera = async () => {
     setError('');
     try {
-      // Check browser support
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Camera API not supported in this browser. Please use Chrome or Safari.');
+        throw new Error('Camera API not supported in this browser.');
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' } // Requests front camera
+        video: { facingMode: 'user' }
       });
 
       streamRef.current = stream;
-      setShowCamera(true); // This triggers the useEffect above
+      setShowCamera(true);
       
     } catch (err) {
       console.error("Camera Error:", err);
-      
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-         setError('Permission denied. Please reset permissions in your browser address bar.');
-      } else if (err.name === 'NotFoundError') {
-         setError('No camera device found.');
-      } else if (err.name === 'NotReadableError') {
-         setError('Camera is in use by another app.');
+         setError('Permission denied. Please reset permissions.');
       } else {
          setError(`Camera error: ${err.message}`);
       }
@@ -101,7 +93,6 @@ const ImageUpload = () => {
   const capturePhoto = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-
     if (!video || !canvas) return;
 
     canvas.width = video.videoWidth;
@@ -109,23 +100,14 @@ const ImageUpload = () => {
     canvas.getContext('2d').drawImage(video, 0, 0);
 
     canvas.toBlob(blob => {
-      if (!blob) {
-        setError('Failed to capture image.');
-        return;
-      }
-      if (blob.size > MAX_SIZE_BYTES) {
-        setError('Image too large (max 1MB). Try good lighting.');
-        return;
-      }
+      if (!blob) return setError('Failed to capture image.');
+      if (blob.size > MAX_SIZE_BYTES) return setError('Image too large.');
 
       const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
       setSelectedImage(file);
       setImagePreview(URL.createObjectURL(blob));
 
-      // Stop camera stream
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(t => t.stop());
-      }
+      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
       setShowCamera(false);
     }, 'image/jpeg', 0.9);
   };
@@ -133,8 +115,9 @@ const ImageUpload = () => {
   const uploadImage = async () => {
     if (!selectedImage) return;
 
-    if (!idNumber || idNumber.length !== 4) {
-        setError('Please enter exactly the last 4 digits of your ID');
+    // 🔥 NEW VALIDATION: Full ID Number
+    if (!idNumber || idNumber.trim().length < 5) {
+        setError('Please enter your valid FULL ID Number');
         return;
     }
 
@@ -161,7 +144,6 @@ const ImageUpload = () => {
       }
 
     } catch (err) {
-      console.error(err);
       setError('Network error. Check your connection.');
     } finally {
       setUploading(false);
@@ -171,13 +153,9 @@ const ImageUpload = () => {
   return (
     <div className="image-upload-page">
       <div className="upload-container">
-
         <div className="upload-header">
           <img src="/moodilogo.png" className="moodi-logo" alt="Mood Indigo" />
           <h1>Upload Verification</h1>
-          <p className="upload-instruction">
-            Upload your photo and ID details for your pass.
-          </p>
         </div>
 
         <div className="upload-content">
@@ -185,25 +163,18 @@ const ImageUpload = () => {
             <div className="upload-area">
               <div className="upload-icon">📸</div>
               <p className="upload-text">Click below to capture your photo</p>
-              
-              <div className="upload-buttons">
-                <button className="capture-btn" onClick={startCamera}>
-                  <FaCamera className="btn-icon" />
-                  Take Photo
-                </button>
-              </div>
+              <button className="capture-btn" onClick={startCamera}>
+                <FaCamera className="btn-icon" /> Take Photo
+              </button>
             </div>
           )}
 
           {showCamera && (
             <div className="camera-view">
-              {/* playsInline required for iPhone */}
               <video ref={videoRef} autoPlay playsInline className="camera-video" />
               <canvas ref={canvasRef} hidden />
               <div className="camera-controls">
-                <button className="capture-photo-btn" onClick={capturePhoto}>
-                  Capture
-                </button>
+                <button className="capture-photo-btn" onClick={capturePhoto}>Capture</button>
               </div>
             </div>
           )}
@@ -215,12 +186,8 @@ const ImageUpload = () => {
               </div>
 
               <div className="govt-id-section" style={{ 
-                  marginTop: '20px', 
-                  textAlign: 'left', 
-                  width: '100%',
-                  background: 'rgba(255,255,255,0.1)',
-                  padding: '15px',
-                  borderRadius: '10px'
+                  marginTop: '20px', textAlign: 'left', width: '100%',
+                  background: 'rgba(255,255,255,0.1)', padding: '15px', borderRadius: '10px'
               }}>
                  
                  <label style={{ display: 'block', color: '#fff', marginBottom: '8px', fontSize:'14px' }}>
@@ -230,39 +197,31 @@ const ImageUpload = () => {
                     value={idType}
                     onChange={(e) => setIdType(e.target.value)}
                     style={{
-                        width: '100%',
-                        padding: '10px',
-                        marginBottom: '15px',
-                        borderRadius: '5px',
-                        border: 'none',
-                        fontSize: '16px'
+                        width: '100%', padding: '10px', marginBottom: '15px',
+                        borderRadius: '5px', border: 'none', fontSize: '16px'
                     }}
                  >
+                    {/* 🔥 Removed College ID Option */}
                     <option value="Aadhar Card">Aadhar Card</option>
                     <option value="PAN Card">PAN Card</option>
                     <option value="Driving License">Driving License</option>
                     <option value="Voter ID">Voter ID</option>
-                    <option value="College ID">College ID</option>
                     <option value="Passport">Passport</option>
                  </select>
 
                  <label style={{ display: 'block', color: '#fff', marginBottom: '8px', fontSize:'14px' }}>
-                    Last 4 Digits of ID
+                    Full ID Number <span style={{color:'#ff4444'}}>*</span>
                  </label>
+                 
+                 {/* 🔥 UPDATED INPUT: Allows letters and longer text */}
                  <input 
                    type="text"
-                   maxLength="4"
-                   placeholder="e.g. 4589"
+                   placeholder="Enter Full ID Number"
                    value={idNumber}
-                   onChange={(e) => setIdNumber(e.target.value.replace(/\D/g, ''))}
+                   onChange={(e) => setIdNumber(e.target.value)} 
                    style={{
-                     width: '100%',
-                     padding: '12px',
-                     borderRadius: '5px',
-                     border: 'none',
-                     fontSize: '18px',
-                     letterSpacing: '3px',
-                     textAlign: 'center',
+                     width: '100%', padding: '12px', borderRadius: '5px',
+                     border: 'none', fontSize: '16px', letterSpacing: '1px',
                      fontWeight: 'bold'
                    }}
                  />
